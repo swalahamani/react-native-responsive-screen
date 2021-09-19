@@ -7,6 +7,8 @@ let screenWidth = Dimensions.get('window').width;
 // Retrieve initial screen's height
 let screenHeight = Dimensions.get('window').height;
 
+let dimensionChangeListener = null;
+
 /**
  * Converts provided width percentage to independent pixel (dp).
  * @param  {string} widthPercent The percentage of screen's width that UI element should cover
@@ -62,7 +64,7 @@ const currentOrientation = () => {
  * @throws {Error} If neither or both of the params are set.  Must only set ONE of them.
  */
 const listenOrientationChange = ({classComponentThis = null, setStateHook = null}) => {
-  Dimensions.addEventListener('change', newDimensions => {
+  dimensionChangeListener = Dimensions.addEventListener('change', newDimensions => {
     // Retrieve and save new dimensions
     screenWidth = newDimensions.window.width;
     screenHeight = newDimensions.window.height;
@@ -89,7 +91,9 @@ const listenOrientationChange = ({classComponentThis = null, setStateHook = null
  * avoid adding new listeners every time the same component is re-mounted.
  */
 const removeOrientationListener = () => {
-  Dimensions.removeEventListener('change', () => {});
+  if (dimensionChangeListener) {
+    dimensionChangeListener.remove();
+  }
 };
 
 export {
